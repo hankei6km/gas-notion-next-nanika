@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="MD2html"
-BASENAME="md2html"
+NAMESPACE="NextNanika"
+BASENAME="next-nanika"
 
 BUILD_DIR="build"
 # esbuild でビルドされた結果(定義は "esbuild.config.mjs" でされている).
