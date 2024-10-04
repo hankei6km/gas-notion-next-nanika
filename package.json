@@ -1,20 +1,19 @@
 {
-  "name": "@hankei6km/my-starter-gas-lib-ts",
-  "version": "0.13.0",
-  "description": "My Starter to make Google Apps Script library by using TypeScript",
+  "name": "@hankei6km/gas-notion-next-nanika",
+  "version": "0.0.0",
+  "description": "Notion で次の何かの時刻を確認するためのライブラリー",
   "author": "hankei6km <hankei6km@gmail.com> (https://github.com/hankei6km)",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/hankei6km/gas-md2html.git"
+    "url": "git://github.com/hankei6km/gas-notion-next-nanika.git"
   },
   "bugs": {
-    "url": "https://github.com/hankei6km/gas-md2html/issues"
+    "url": "https://github.com/hankei6km/gas-notion-next-nanika/issues"
   },
   "keywords": [
     "gas",
-    "markdown",
-    "html"
+    "notion"
   ],
   "files": [
     "index.d.ts"
@@ -35,15 +34,6 @@
     "test:build": "npm run clean:test && npm run build && bash scripts/test-build.sh && npm run test",
     "posttest:build": "npm run clean:test",
     "lint:type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "hast-util-raw": "^9.0.2",
-    "hast-util-sanitize": "^5.0.1",
-    "hast-util-to-html": "^9.0.1",
-    "mdast-util-from-markdown": "^2.0.0",
-    "mdast-util-gfm": "^3.0.0",
-    "mdast-util-to-hast": "^13.1.0",
-    "micromark-extension-gfm": "^3.0.0"
   },
   "devDependencies": {
     "@hankei6km/files-to-licenses": "^0.1.1",

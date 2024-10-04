@@ -21,7 +21,7 @@ GitHub 上に作成されたリポジトリには `types` ラベルを追加し�
 
 事前に以下の名前を決めておきます。
 
-- `NAMESPACE` - 型定義の  namespace に利用する名前
+- `NAMESPACE` - 型定義の namespace に利用する名前
 - `BASENAME` - ソースファイルなどに使う名前
 
 例: `NAMESPACE=MD2html`、 `BASENAME=md2htnml`
@@ -29,29 +29,33 @@ GitHub 上に作成されたリポジトリには `types` ラベルを追加し�
 名前を決めたら以下のように設定します。
 
 1. `package.json` の変更
-  - パッケージ名などを変更
-  - バージョンを `0.0.0` へ変更
+
+- パッケージ名などを変更
+- バージョンを `0.0.0` へ変更
+
 1. `src/md2html.ts` 内の `namespace` を `NAMESPACE` にあわせて変更
 1. `src/md2html.ts` のファイル名を `BASENNAME` にあわせて変更
 1. `src/main.ts` 内の `export` と `inport` を変更
 1. `src/index.js` 内のライセンスバナー
-    - タイトルと `.zip` ファイル名を BASENAME にあわせる
+   - タイトルと `.zip` ファイル名を BASENAME にあわせる
+
 - `test/md2html.spec.ts` `test/build/md2html_src.js` のファイル名を `BASENAME` にあわせて変更
+
 1. `scripts/build.sh` の `NAMESPACE` と `BASENAME` を変更
 1. `scripts/test-build.sh` の変更
-    -  `BASENAME` を事前に決めた値へ変更
+   - `BASENAME` を事前に決めた値へ変更
 1. `.github/workflows/deploy.yaml`
-    - `Make archilve file` ステップの `.zip` ファイル名を BASENAME にあわせて変更
-    - `Upload archive file to release Asset` ステップの `.zip` ファイル名を BASENAME にあわせて変更
+   - `Make archilve file` ステップの `.zip` ファイル名を BASENAME にあわせて変更
+   - `Upload archive file to release Asset` ステップの `.zip` ファイル名を BASENAME にあわせて変更
 1. `LICENSE` 等を新しいライブラリーにあわせて変更(付録にテンプレート)
-
 
 ### Google Apps Script ライブラリーの作成と関連付け
 
 1. `$ clasp create` などでスタンドアローンのプロジェクトを 2 つ作成
-  - 1 つは開発用、1 つは公開用として利用
-1. テンプレートの `.clasp.json` の `scriptId` を開発用プロジェクトのものへ変更
 
+- 1 つは開発用、1 つは公開用として利用
+
+1. テンプレートの `.clasp.json` の `scriptId` を開発用プロジェクトのものへ変更
 
 ### GitHub 上の environment
 
@@ -75,7 +79,6 @@ GitHub 上に作成されたリポジトリには `types` ラベルを追加し�
 
 `GAS_SCRIPT_ID` は dev と rel 用のものを設定します。 開発と公開で異なるクレデンシャルが必要ならその他も環境にあわせて設定します。
 
-
 #### npm publish 用
 
 - `npm_pkg` - npm レジストリーへ `npm publish` するための設定用
@@ -88,15 +91,15 @@ GitHub 上に作成されたリポジトリには `types` ラベルを追加し�
 
 1. `src/${BASENAME}.ts` の namespace 内に処理を記述します
 
-    ここでの記述はライブラリーから利用される他に、TypeScript の型定義としても利用されます。
+   ここでの記述はライブラリーから利用される他に、TypeScript の型定義としても利用されます。
 
 1. `src/main.ts` でエクスポートする定義(namespace)を記述します
 
-    エクスポートされた定義は、以下の `src/index.js` から参照できる `_entry_point_` のメンバーとして登録されます。
+   エクスポートされた定義は、以下の `src/index.js` から参照できる `_entry_point_` のメンバーとして登録されます。
 
 1. `src/index.js` にライブラリーとして参照できる関数などを記述します
 
-    ここでの記述は通常の Google Apps Script ライブラリーとして振る舞います。`_entry_point_` のメンバーなどを利用して関数を記述します。
+   ここでの記述は通常の Google Apps Script ライブラリーとして振る舞います。`_entry_point_` のメンバーなどを利用して関数を記述します。
 
 NPM パッケージを追加できます。ただし、Node.js のビルトインライブラリーを利用しているとビルドできないこともあります。
 
@@ -104,11 +107,11 @@ NPM パッケージを追加できます。ただし、Node.js のビルトイ�
 
 1. `test/xxxx.spec.ts` にテストを記述します
 
-    Jest フレームワークを利用しています。また、テストは native ESM として実行されます。
+   Jest フレームワークを利用しています。また、テストは native ESM として実行されます。
 
 1. `test/build/xxx_src.js` にビルドされたコード用のテストを記述します
 
-    `src/index.js` 用のテストを記述します。`src/idnex.js` とは結合された状態で実行されるので `import` は行いません。
+   `src/index.js` 用のテストを記述します。`src/idnex.js` とは結合された状態で実行されるので `import` は行いません。
 
 ## npm スクリプト
 
@@ -151,7 +154,6 @@ GitHub 上でリリースを公開すると開発と公開用ライブラリー�
   },
   "keywords": []
 ```
-
 
 ## License
 
