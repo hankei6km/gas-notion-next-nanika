@@ -4,6 +4,25 @@ import { fileURLToPath } from 'node:url'
 import * as esbuild from 'esbuild'
 import { FilesToLicenses } from '@hankei6km/files-to-licenses'
 
+let fsPolyfillEmptyPlugin = {
+  name: 'fs-polyfill-empty-plugin',
+  setup(build) {
+    build.onResolve({ filter: /^fs$/ }, async (args) => {
+      // Only target fs within gray-matter this time
+      if (
+        args.resolveDir.match(/.+\/gray-matter$/) &&
+        args.kind === 'require-call'
+      ) {
+        return { path: args.path, namespace: 'fs-empty', external: false }
+      }
+      return undefined
+    })
+    build.onLoad({ filter: /^fs$/, namespace: 'fs-empty' }, async (args) => {
+      return { contents: '', loader: 'js' }
+    })
+  }
+}
+
 const result = await esbuild.build({
   entryPoints: ['src/main.ts'],
   outfile: 'build/main.js',
@@ -15,8 +34,9 @@ const result = await esbuild.build({
   platform: 'node',
   packages: 'bundle',
   metafile: true,
-  target: 'ES2019',
+  target: 'ES2017',
   tsconfig: 'tsconfig.build.json',
+  plugins: [fsPolyfillEmptyPlugin],
   logLevel: 'info'
 })
 

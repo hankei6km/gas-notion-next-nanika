@@ -25,13 +25,14 @@
     "setup:clasp": "bash scripts/setup-clasp.sh && bash scripts/setup-clasprc.sh",
     "cleanup:clasp": "bash scripts/cleanup-clasp.sh",
     "clean": "npm run clean:build && npm run clean:test",
-    "clean:build": "rimraf index.d.ts build/*",
+    "clean:build": "rimraf build/*",
     "clean:test": "rimraf test/build/*.spec.js",
     "build": "npm run clean:build && bash scripts/build.sh",
     "push": "bash scripts/clasp-with-auth.sh push --force",
     "deploy": "bash scripts/clasp-with-auth.sh deploy",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
-    "test:build": "npm run clean:test && npm run build && bash scripts/test-build.sh && npm run test",
+    "test:tz": "TZ=GMT+9 npm run test && TZ=GMT npm run test",
+    "test:build": "npm run clean:test && npm run build && bash scripts/test-build.sh && npm run test:tz",
     "posttest:build": "npm run clean:test",
     "lint:type-check": "tsc --noEmit"
   },
@@ -46,5 +47,9 @@
     "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15",
+    "notion2content": "^0.4.1"
   }
 }

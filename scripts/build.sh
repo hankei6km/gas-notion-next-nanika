@@ -4,6 +4,7 @@ set -e
 NAMESPACE="NextNanika"
 BASENAME="next-nanika"
 
+TYPES_DIR="types"
 BUILD_DIR="build"
 # esbuild でビルドされた結果(定義は "esbuild.config.mjs" でされている).
 OUT_MAIN="${BUILD_DIR}/main.js"
@@ -17,9 +18,6 @@ node esbuild.config.mjs
 tsc --emitDeclarationOnly --declaration --project ./tsconfig.build.json
 # App Script で参照できるようにするファイルと結合.
 cat "${SRC_INDEX}" "${OUT_MAIN}" > "${BUILD_DIR}/${BASENAME}.js"
-
-# Assets に含める LICENSE ファイルをコピー.
-cp LICENSE "${BUILD_DIR}/LICENSE.txt"
 
 # 型定義から良くない方法で export を外す(モジュールにしないため)
 # index.d.ts へ移動.
