@@ -8,6 +8,23 @@
 
 'use strict'
 
-function dummy() {
-  return _entry_point_.NextNanika.dummy()
+function makeClient(opts) {
+  return _entry_point_.NextNanika.makeClient(opts)
+}
+
+async function cleanup(client, databaseId, minutesAgo, propName) {
+  return _entry_point_.NextNanika.cleanup(
+    client,
+    databaseId,
+    minutesAgo,
+    propName
+  )
+}
+
+async function run(client, opts) {
+  return _entry_point_.NextNanika.run(client, opts)
+}
+
+function makeBasicTimeRecGenerator(timeTable, group) {
+  return _entry_point_.NextNanika.makeBasicTimeRecGenerator(timeTable, group)
 }
