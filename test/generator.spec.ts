@@ -6,7 +6,7 @@ const mockTimeTable: NextNanika.TimeTableEntry[] = [
     dayKind: [],
     recs: [
       { icon: '#️⃣', start: { hh: 10, mm: 0 } },
-      { start: { hh: 14, mm: 0 }, tags: ['test'] },
+      { name: 'Test Event', start: { hh: 14, mm: 0 }, tags: ['test'] },
       { start: { hh: 18, mm: 0 }, end: { hh: 14, mm: 10 } }
     ]
   },
@@ -46,7 +46,7 @@ describe('makeBasicTimeRecGenerator', () => {
 
     expect(entries).toEqual([
       { icon: '#️⃣', start: { hh: 10, mm: 0 }, tags: [[], []] },
-      { start: { hh: 14, mm: 0 }, tags: [[], ['test']] },
+      { name: 'Test Event', start: { hh: 14, mm: 0 }, tags: [[], ['test']] },
       { start: { hh: 18, mm: 0 }, end: { hh: 14, mm: 10 }, tags: [[], []] }
     ])
   })
@@ -94,7 +94,11 @@ describe('makeBasicTimeRecGenerator', () => {
 
     expect(entries).toEqual([
       { icon: '#️⃣', start: { hh: 10, mm: 0 }, tags: [['group'], []] },
-      { start: { hh: 14, mm: 0 }, tags: [['group'], ['test']] },
+      {
+        name: 'Test Event',
+        start: { hh: 14, mm: 0 },
+        tags: [['group'], ['test']]
+      },
       {
         start: { hh: 18, mm: 0 },
         end: { hh: 14, mm: 10 },

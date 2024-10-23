@@ -78,6 +78,7 @@ export namespace NextNanika {
   }
   export type TimeRec = {
     icon?: NextNanika.Entry['icon']
+    name?: string
     start: {
       hh: number
       mm: number
