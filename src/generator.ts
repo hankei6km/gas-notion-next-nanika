@@ -17,6 +17,7 @@ export function makeBasicTimeRecGenerator(
     for (const rec of recs) {
       const e: NextNanika.Entry = {
         icon: rec.icon,
+        name: rec.name,
         start: {
           hh: rec.start.hh,
           mm: rec.start.mm
