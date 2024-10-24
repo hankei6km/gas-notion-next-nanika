@@ -45,7 +45,7 @@ Apps Script のコードエディターで以下の手順を実行するとプ�
 1. コードエディターのファイル名一覧が表示される部分の「ライブラリ +」をクリック
 1. 「スクリプト ID」フィールドに `1Mf17VPjf-OuKoxWNoJJbagig1O9kmK6yOXbHM270vMqsYskKXA_2CEWE` を入力し検索をクリック
 1. バージョンを選択(通常は最新版)
-1. 「ID」を `NextNenika` へ変更
+1. 「ID」を `NextNanika` へ変更
 1. 「追加」をクリック
 
 上記以外にも Release ページから `gas-notion-next-nanika.zip` をダウンロードし、`/dist` ディレクトリーをプロジェクトへコピーできます。
