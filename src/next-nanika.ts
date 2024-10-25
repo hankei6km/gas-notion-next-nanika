@@ -104,6 +104,7 @@ export namespace NextNanika {
     getDatKind?: GetDayKind
     daysToProcess?: number
     limit?: number
+    skipCleanup?: boolean
   }
 
   export function makeClient(opts: ClientOpts): BaseClient {
@@ -130,15 +131,19 @@ export namespace NextNanika {
     const baseTime = new Date()
     const tz = tzString(baseTime.getTimezoneOffset())
 
-    console.log('start: cleanup')
-    await cleanupT(
-      client,
-      opts.databaseId,
-      new Date(baseTime.getTime()),
-      1440, // 24 * 60
-      opts.propNames.time
-    )
-    console.log('end: cleanup')
+    if (opts.skipCleanup !== true) {
+      console.log('start: cleanup')
+      await cleanupT(
+        client,
+        opts.databaseId,
+        new Date(baseTime.getTime()),
+        1440, // 24 * 60
+        opts.propNames.time
+      )
+      console.log('end: cleanup')
+    } else {
+      console.log('skipped: cleanup')
+    }
     console.log('start: gather')
     const recs = new GatherTimeRecs(
       client,

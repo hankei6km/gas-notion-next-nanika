@@ -367,4 +367,70 @@ describe('NextNanika.run()', () => {
       })
     )
   })
+  it('should skip cleanup when skipCleanup is true', async () => {
+    const mockTimeRecGenerator: NextNanika.TimeRecGenerator = function* () {
+      yield {
+        start: { hh: 9, mm: 0 },
+        end: { hh: 10, mm: 0 },
+        name: 'Event 1',
+        tags: [[], ['tag1']],
+        icon: '📅'
+      }
+    }
+
+    const opts: NextNanika.NextNanikaOptions = {
+      databaseId: 'test-database-id',
+      timeRecGenerator: mockTimeRecGenerator,
+      propNames: {
+        name: 'Name',
+        time: 'Time',
+        tags: ['group', 'tags']
+      },
+      getDatKind: (date: Date) => {
+        return 'SUN'
+      },
+      skipCleanup: true
+    }
+
+    mockClient.queryDatabases.mockResolvedValue({
+      results: []
+    } as any)
+
+    await NextNanika.run(mockClient, opts)
+
+    expect(mockClient.queryDatabases).toHaveBeenCalledTimes(1) // Only for gathering, not for cleanup
+    expect(mockClient.createPage).toHaveBeenCalledTimes(3) // 1 generator * 3 days
+    expect(mockClient.trashPage).not.toHaveBeenCalled() // No cleanup, so no trashing
+    expect(mockClient.createPage).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        parent: { database_id: 'test-database-id' },
+        properties: expect.objectContaining({
+          Name: expect.objectContaining({
+            title: expect.arrayContaining([
+              expect.objectContaining({
+                text: expect.objectContaining({
+                  content: 'Event 1'
+                })
+              })
+            ])
+          }),
+          Time: expect.objectContaining({
+            date: expect.objectContaining({
+              start: `2023-10-01T09:00:00.000${currentTzString}`,
+              end: `2023-10-01T10:00:00.000${currentTzString}`
+            })
+          }),
+          tags: expect.objectContaining({
+            multi_select: expect.arrayContaining([
+              expect.objectContaining({
+                name: 'tag1'
+              })
+            ])
+          })
+        }),
+        icon: { type: 'emoji', emoji: '📅' }
+      })
+    )
+  })
 })
