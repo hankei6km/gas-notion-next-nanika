@@ -292,6 +292,83 @@ describe('NextNanika.run()', () => {
     expect(mockClient.createPage).toHaveBeenCalledTimes(2) // Should create only 2 pages due to the limit
   })
 
+  it('should respect the startDaysOffset option and start processing from the specified day', async () => {
+    const mockTimeRecGenerator1: NextNanika.TimeRecGenerator = function* () {
+      yield {
+        start: { hh: 9, mm: 0 },
+        end: { hh: 10, mm: 0 },
+        name: 'Event 1',
+        tags: [[], ['tag1']],
+        icon: '📅'
+      }
+    }
+
+    const mockTimeRecGenerator2: NextNanika.TimeRecGenerator = function* () {
+      yield {
+        start: { hh: 11, mm: 0 },
+        end: { hh: 12, mm: 0 },
+        name: 'Event 2',
+        tags: [[], ['tag2']],
+        icon: '📅'
+      }
+    }
+
+    const opts: NextNanika.NextNanikaOptions = {
+      databaseId: 'test-database-id',
+      timeRecGenerator: [mockTimeRecGenerator1, mockTimeRecGenerator2],
+      propNames: {
+        name: 'Name',
+        time: 'Time',
+        tags: ['group', 'tags']
+      },
+      getDatKind: (date: Date) => {
+        return 'SUN'
+      },
+      startDaysOffset: 1, // Start processing from the second day
+      daysToProcess: 2
+    }
+
+    mockClient.queryDatabases.mockResolvedValue({
+      results: []
+    } as any)
+
+    await NextNanika.run(mockClient, opts)
+
+    expect(mockClient.queryDatabases).toHaveBeenCalledTimes(2)
+    expect(mockClient.createPage).toHaveBeenCalledTimes(4) // 2 generators * 2 days (starting from the second day)
+    expect(mockClient.createPage).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        parent: { database_id: 'test-database-id' },
+        properties: expect.objectContaining({
+          Name: expect.objectContaining({
+            title: expect.arrayContaining([
+              expect.objectContaining({
+                text: expect.objectContaining({
+                  content: 'Event 1'
+                })
+              })
+            ])
+          }),
+          Time: expect.objectContaining({
+            date: expect.objectContaining({
+              start: `2023-10-02T09:00:00.000${currentTzString}`,
+              end: `2023-10-02T10:00:00.000${currentTzString}`
+            })
+          }),
+          tags: expect.objectContaining({
+            multi_select: expect.arrayContaining([
+              expect.objectContaining({
+                name: 'tag1'
+              })
+            ])
+          })
+        }),
+        icon: { type: 'emoji', emoji: '📅' }
+      })
+    )
+  })
+
   it('should process only the specified number of days', async () => {
     const mockTimeRecGenerator1: NextNanika.TimeRecGenerator = function* () {
       yield {

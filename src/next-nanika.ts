@@ -102,6 +102,7 @@ export namespace NextNanika {
     timeRecGenerator: TimeRecGenerator | TimeRecGenerator[]
     propNames: PropNames
     getDatKind?: GetDayKind
+    startDaysOffset?: number
     daysToProcess?: number
     limit?: number
     skipCleanup?: boolean
@@ -128,7 +129,10 @@ export namespace NextNanika {
   export async function run(client: BaseClient, opts: NextNanikaOptions) {
     // 基本とする時刻、tz は実行環境を尊重する
     // (GAS ならライブラリのコードを呼び出しているプロジェクトの設定に従う)
-    const baseTime = new Date()
+    const baseTime = new Date(
+      new Date().getTime() +
+        (opts.startDaysOffset || 0) * 86400000 /*24 * 60 * 60 * 1000*/
+    )
     const tz = tzString(baseTime.getTimezoneOffset())
 
     if (opts.skipCleanup !== true) {
