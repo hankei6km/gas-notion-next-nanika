@@ -15,7 +15,7 @@ export function tzString(offset: number): string {
 
 export function getDayKind(baseTime: Date): NextNanika.DayKind {
   const holidayCalendar = CalendarApp.getCalendarById(
-    'ja.japanese#holiday@group.v.calendar.google.com'
+    'ja.japanese.official#holiday@group.v.calendar.google.com'
   )
   const holidayEvents = holidayCalendar.getEventsForDay(baseTime)
   if (holidayEvents.length == 0) {

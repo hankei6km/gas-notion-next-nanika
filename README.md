@@ -87,7 +87,7 @@ Notion 外部からデータベースを操作するためのインテグレー�
 - `SAT` : 土曜日のデータを入力(これ以降のシートはカンマ区切り英数半角大文字の曜日名で指定)
 - `SUN,HOL` : 日曜日と休日のデータを入力
 
-休日は `ja.japanese#holiday@group.v.calendar.google.com` を元に判定しています。
+休日は `ja.japanese.official#holiday@group.v.calendar.google.com` を元に判定しています。
 
 作業などに使うシートはシート名の先頭を `!` にすることで、データベース送信の対象から外すことができます。
 
