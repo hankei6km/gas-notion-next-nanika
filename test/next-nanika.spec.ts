@@ -510,4 +510,121 @@ describe('NextNanika.run()', () => {
       })
     )
   })
+  it('should handle user-defined DayKind correctly', async () => {
+    const mockTimeRecGenerator = NextNanika.makeBasicTimeRecGenerator<
+      'D1' | 'D2'
+    >(
+      [
+        {
+          dayKind: ['D1'],
+          recs: [
+            {
+              start: { hh: 9, mm: 0 },
+              end: { hh: 10, mm: 0 },
+              name: 'Event D1',
+              tags: ['tagD1'],
+              icon: '📅'
+            }
+          ]
+        },
+        {
+          dayKind: ['D2'],
+          recs: [
+            {
+              start: { hh: 11, mm: 0 },
+              end: { hh: 12, mm: 0 },
+              name: 'Event D2',
+              tags: ['tagD2'],
+              icon: '📅'
+            }
+          ]
+        }
+      ],
+      []
+    )
+
+    const opts: NextNanika.NextNanikaOptions<'D1' | 'D2'> = {
+      databaseId: 'test-database-id',
+      timeRecGenerator: mockTimeRecGenerator,
+      propNames: {
+        name: 'Name',
+        time: 'Time',
+        tags: ['group', 'tags']
+      },
+      getDatKind: (date: Date) => {
+        return date.getDay() % 2 === 0 ? 'D1' : 'D2'
+      }
+    }
+
+    mockClient.queryDatabases.mockResolvedValue({
+      results: []
+    } as any)
+
+    await NextNanika.run(mockClient, opts)
+
+    expect(mockClient.queryDatabases).toHaveBeenCalledTimes(2)
+    expect(mockClient.createPage).toHaveBeenCalledTimes(3) // 1 generator * 3 days (D1, D2, D1)
+    expect(mockClient.createPage).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({
+        parent: { database_id: 'test-database-id' },
+        properties: expect.objectContaining({
+          Name: expect.objectContaining({
+            title: expect.arrayContaining([
+              expect.objectContaining({
+                text: expect.objectContaining({
+                  content: 'Event D1'
+                })
+              })
+            ])
+          }),
+          Time: expect.objectContaining({
+            date: expect.objectContaining({
+              start: `2023-10-01T09:00:00.000${currentTzString}`,
+              end: `2023-10-01T10:00:00.000${currentTzString}`
+            })
+          }),
+          tags: expect.objectContaining({
+            multi_select: expect.arrayContaining([
+              expect.objectContaining({
+                name: 'tagD1'
+              })
+            ])
+          })
+        }),
+        icon: { type: 'emoji', emoji: '📅' }
+      })
+    )
+    expect(mockClient.createPage).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({
+        parent: { database_id: 'test-database-id' },
+        properties: expect.objectContaining({
+          Name: expect.objectContaining({
+            title: expect.arrayContaining([
+              expect.objectContaining({
+                text: expect.objectContaining({
+                  content: 'Event D2'
+                })
+              })
+            ])
+          }),
+          Time: expect.objectContaining({
+            date: expect.objectContaining({
+              start: `2023-10-02T11:00:00.000${currentTzString}`,
+              end: `2023-10-02T12:00:00.000${currentTzString}`
+            })
+          }),
+          tags: expect.objectContaining({
+            multi_select: expect.arrayContaining([
+              expect.objectContaining({
+                name: 'tagD2'
+              })
+            ])
+          })
+        }),
+        icon: { type: 'emoji', emoji: '📅' }
+      })
+    )
+  })
 })
