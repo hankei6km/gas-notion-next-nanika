@@ -87,8 +87,6 @@ Notion 外部からデータベースを操作するためのインテグレー�
 - `SAT` : 土曜日のデータを入力(これ以降のシートはカンマ区切り英数半角大文字の曜日名で指定)
 - `SUN,HOL` : 日曜日と休日のデータを入力
 
-休日は `ja.japanese#holiday@group.v.calendar.google.com` を元に判定しています。
-
 作業などに使うシートはシート名の先頭を `!` にすることで、データベース送信の対象から外すことができます。
 
 #### 入力データ
@@ -206,6 +204,31 @@ function sheetsToTimeTable_(spreadSheet) {
 ![データベースに時刻のページが保存されているスクリーンショット](images/database.png)
 
 定期的にデータを送信する場合はトリガーを設定してください。どの時刻に起動しても当日を起点に処理するので、時刻の指定は任意です。
+
+#### 休日について
+
+休日は Google カレンダーの「日本の祝日(`ja.japanese#holiday@group.v.calendar.google.com`)」を元に判定していますが、このカレンダーは現在(2024 年 10 月時点で)その名前に反してデフォルトでは祝日以外のイベントが設定されています。
+
+祝日以外のイベントを除外する場合は、以下の記事を参考に「日本の祝日」カレンダーを再作成し、`getDayKind` オプションを以下のように指定してください。
+
+- [\[GAS\] カレンダーの「祝日のみ」と「祝日およびその他の休日」 #GoogleAppsScript - Qiita](https://qiita.com/sakaimo/items/0a0a31697dd821e775cd)
+
+```javascript
+await NextNanika.run(client, {
+  databaseId,
+  timeRecGenerator: generators,
+  propNames: {
+    name: '名前',
+    time: '発車時刻',
+    tags: ['駅名', '種別']
+  },
+  getDatKind: NextNanika.makeDayKindGetter([
+    'ja.japanese.official#holiday@group.v.calendar.google.com'
+  ])
+})
+```
+
+ただし、これでも「銀行休業日」などが設定されています。細かく調整した場合は後述の「任意の休日指定」を参照してください。
 
 ## Applications
 
@@ -374,6 +397,35 @@ const generator1 = NextNanika.makeBasicTimeRecGenerator(
 この他、所定の型でデータを生成することで任意のコードでジェネレーターを作成できます。驚異があれば、`src/generator.ts` を参照してください。
 
 ### 任意の休日指定
+
+Google カレンダーの任意のカレンダーを休日判定に利用する方法です。
+
+以下のようにカレンダー ID の配列を渡すことで、いずれかのカレンダーにイベントがある日は休日と判定されます。
+
+```javascript
+await NextNanika.run(client, {
+  databaseId,
+  timeRecGenerator: g,
+  propNames: {
+    name: '科目名',
+    time: '授業時間',
+    tags: ['期間', '備考']
+  },
+  getDatKind: NextNanika.makeDayKindGetter([
+    'ja.japanese.official#holiday@group.v.calendar.google.com',
+    '< カレンダー ID >'
+  ]),
+  startDaysOffset: 6,
+  daysToProcess: 30,
+  limit,
+  skipCleanup: true
+})
+```
+
+なお、日本の祝日カレンダーを利用する場合は、配列にそのカレンダーの ID も含める必要があります。
+(上記サンプルは「日本の祝日」カレンダーから「その他の行事」を除外して作り直した場合のカレンダー ID を渡しています)
+
+### 日の種類判定
 
 以下の型で関数を作成し、`NextNanika.run()` の `opts.getDatKind` に渡すと任意の日付を休日として扱うことができます。
 

@@ -13,30 +13,38 @@ export function tzString(offset: number): string {
   return `${sign}${padNN(hours)}:${padNN(minutes)}`
 }
 
-export function getDayKind(baseTime: Date): NextNanika.DayKind {
-  const holidayCalendar = CalendarApp.getCalendarById(
-    'ja.japanese#holiday@group.v.calendar.google.com'
-  )
-  const holidayEvents = holidayCalendar.getEventsForDay(baseTime)
-  if (holidayEvents.length == 0) {
-    switch (baseTime.getDay()) {
-      case 0:
-        return 'SUN'
-      case 1:
-        return 'MON'
-      case 2:
-        return 'TUE'
-      case 3:
-        return 'WED'
-      case 4:
-        return 'THU'
-      case 5:
-        return 'FRI'
-      case 6:
-        return 'SAT'
+export function makeDayKindGetter(
+  calendarIds: string[] = ['']
+): NextNanika.GetDayKind {
+  return function getDayKind(baseTime: Date): NextNanika.DayKind {
+    let isHoliday = false
+    for (const calendar of calendarIds) {
+      const holidayCalendar = CalendarApp.getCalendarById(calendar)
+      if (holidayCalendar.getEventsForDay(baseTime).length > 0) {
+        isHoliday = true
+        break
+      }
     }
+    if (isHoliday === false) {
+      switch (baseTime.getDay()) {
+        case 0:
+          return 'SUN'
+        case 1:
+          return 'MON'
+        case 2:
+          return 'TUE'
+        case 3:
+          return 'WED'
+        case 4:
+          return 'THU'
+        case 5:
+          return 'FRI'
+        case 6:
+          return 'SAT'
+      }
+    }
+    return 'HOL'
   }
-  return 'HOL'
 }
 
 export function formatHHMMOver24Hours(

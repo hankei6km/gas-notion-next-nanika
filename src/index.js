@@ -12,6 +12,10 @@ function makeClient(opts) {
   return _entry_point_.NextNanika.makeClient(opts)
 }
 
+function makeDayKindGetter(calendarId) {
+  return _entry_point_.NextNanika.makeDayKindGetter(calendarId)
+}
+
 async function cleanup(client, databaseId, minutesAgo, propName) {
   return _entry_point_.NextNanika.cleanup(
     client,
