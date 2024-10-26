@@ -4,7 +4,7 @@ import {
   cleanup as cleanupT,
   formatHHMMOver24Hours,
   GatherTimeRecs,
-  getDayKind,
+  makeDayKindGetter as makeDayKindGetterT,
   padNN,
   tzString
 } from './util.js'
@@ -118,6 +118,12 @@ export namespace NextNanika {
     return typeof opts.limit === 'number' && createdCount >= opts.limit
   }
 
+  export function makeDayKindGetter(
+    calendarIds: string[] = ['ja.japanese#holiday@group.v.calendar.google.com']
+  ): GetDayKind {
+    return makeDayKindGetterT(calendarIds)
+  }
+
   export async function cleanup(
     client: BaseClient,
     databaseId: string,
@@ -161,6 +167,7 @@ export namespace NextNanika {
     const daysToProcess =
       typeof opts.daysToProcess === 'number' ? opts.daysToProcess : 3
     let createdCount = 0
+    const dayKindGetter = opts.getDatKind || makeDayKindGetter()
     for (
       let dayOffset = 0;
       dayOffset < daysToProcess && !isLimitReached(opts, createdCount);
@@ -180,9 +187,7 @@ export namespace NextNanika {
       ) {
         const timeRecGenerator = timeRecGenerators[timeRecGeneratorIdx]
         const timeRecs = timeRecGenerator({
-          dayKind: opts.getDatKind
-            ? opts.getDatKind(currentBaseTime)
-            : getDayKind(currentBaseTime),
+          dayKind: dayKindGetter(currentBaseTime),
           baseTime: currentBaseTime
         })
         for (const timeRec of timeRecs) {

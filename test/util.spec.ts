@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals'
 import {
   padNN,
-  getDayKind,
+  makeDayKindGetter,
   tzString,
   formatHHMMOver24Hours,
   chkRecsAlreadyExist,
@@ -49,7 +49,7 @@ describe('tzString', () => {
   })
 })
 
-describe('getDayKind', () => {
+describe('makeDayKindGetter', () => {
   let CalendarApp: any
   let holidayCalendar: any
   let originalCalendarApp: any
@@ -75,49 +75,56 @@ describe('getDayKind', () => {
   it('should return SUN for Sunday', () => {
     const date = new Date(`2023-10-01T00:00:00.000${currentTzString}`) // A Sunday
     holidayCalendar.getEventsForDay.mockReturnValue([])
-    expect(getDayKind(date)).toBe('SUN')
+    expect(makeDayKindGetter()(date)).toBe('SUN')
   })
 
   it('should return MON for Monday', () => {
     const date = new Date(`2023-10-02T00:00:00.000${currentTzString}`) // A Monday
     holidayCalendar.getEventsForDay.mockReturnValue([])
-    expect(getDayKind(date)).toBe('MON')
+    expect(makeDayKindGetter()(date)).toBe('MON')
   })
 
   it('should return TUE for Tuesday', () => {
     const date = new Date(`2023-10-03T00:00:00.000${currentTzString}`) // A Tuesday
     holidayCalendar.getEventsForDay.mockReturnValue([])
-    expect(getDayKind(date)).toBe('TUE')
+    expect(makeDayKindGetter()(date)).toBe('TUE')
   })
 
   it('should return WED for Wednesday', () => {
     const date = new Date(`2023-10-04T00:00:00.000${currentTzString}`) // A Wednesday
     holidayCalendar.getEventsForDay.mockReturnValue([])
-    expect(getDayKind(date)).toBe('WED')
+    expect(makeDayKindGetter()(date)).toBe('WED')
   })
 
   it('should return THU for Thursday', () => {
     const date = new Date(`2023-10-05T00:00:00.000${currentTzString}`) // A Thursday
     holidayCalendar.getEventsForDay.mockReturnValue([])
-    expect(getDayKind(date)).toBe('THU')
+    expect(makeDayKindGetter()(date)).toBe('THU')
   })
 
   it('should return FRI for Friday', () => {
     const date = new Date(`2023-10-06T00:00:00.000${currentTzString}`) // A Friday
     holidayCalendar.getEventsForDay.mockReturnValue([])
-    expect(getDayKind(date)).toBe('FRI')
+    expect(makeDayKindGetter()(date)).toBe('FRI')
   })
 
   it('should return SAT for Saturday', () => {
     const date = new Date(`2023-10-07T00:00:00.000${currentTzString}`) // A Saturday
     holidayCalendar.getEventsForDay.mockReturnValue([])
-    expect(getDayKind(date)).toBe('SAT')
+    expect(makeDayKindGetter()(date)).toBe('SAT')
   })
 
   it('should return HOL for a holiday', () => {
     const date = new Date(`2023-10-09T00:00:00.000${currentTzString}`) // A Monday
     holidayCalendar.getEventsForDay.mockReturnValue([{}]) // Mocking a holiday event
-    expect(getDayKind(date)).toBe('HOL')
+    expect(makeDayKindGetter()(date)).toBe('HOL')
+  })
+  it('should call getEventsForDay twice when multiple calendar IDs are provided', () => {
+    const date = new Date(`2023-10-01T00:00:00.000${currentTzString}`) // A Sunday
+    holidayCalendar.getEventsForDay.mockReturnValue([])
+    const getDayKind = makeDayKindGetter(['cal1', 'cal2'])
+    getDayKind(date)
+    expect(holidayCalendar.getEventsForDay).toHaveBeenCalledTimes(2)
   })
 })
 
