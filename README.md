@@ -394,7 +394,7 @@ const generator1 = NextNanika.makeBasicTimeRecGenerator(
     ]
 ```
 
-この他、所定の型でデータを生成することで任意のコードでジェネレーターを作成できます。驚異があれば、`src/generator.ts` を参照してください。
+この他、所定の型でデータを生成することで任意のコードでジェネレーターを作成できます。詳細については、`src/generator.ts` を参照してください。
 
 ### 任意の休日指定
 
@@ -425,15 +425,101 @@ await NextNanika.run(client, {
 なお、日本の祝日カレンダーを利用する場合は、配列にそのカレンダーの ID も含める必要があります。
 (上記サンプルは「日本の祝日」カレンダーから「その他の行事」を除外して作り直した場合のカレンダー ID を渡しています)
 
-### 日の種類判定
+### 時間割に利用する
 
-以下の型で関数を作成し、`NextNanika.run()` の `opts.dayKindGetter` に渡すと任意の日付を休日として扱うことができます。
+以下のように、スプレッドシートで終了時間を入力し、`NextNanika.run()` でのプロパティ名指定を変更することで時間割風なレコードを作成できます。
 
-```typescript
-type DayKind = 'SUN' | 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'HOL'
+![Google スプレッドシートで曜日別シートに時間割の設定を入力していいるスクリーンショット](images/sheet_class.png)
 
-type GetDayKind = (baseTime: Date) => DayKind
+```javascript
+async function start() {
+  const props = PropertiesService.getScriptProperties()
+  const apiKey = props.getProperty('NOTION_API_KEY')
+  const databaseId = props.getProperty('NOTION_DATABASE_ID')
+
+  const client = NextNanika.makeClient({ auth: apiKey })
+  const generators = [
+    NextNanika.makeBasicTimeRecGenerator(
+      sheetsToTimeTable_(SpreadsheetApp.openById('< スプレッドシートの ID >')),
+      ['2024 年度', '後期']
+    )
+  ]
+  const dayKindGetter = NextNanika.makeDayKindGetter([
+    'ja.japanese.official#holiday@group.v.calendar.google.com'
+  ])
+  await NextNanika.run(client, {
+    databaseId,
+    timeRecGenerator: generators,
+    propNames: {
+      name: '科目名',
+      time: '授業時間',
+      tags: ['期間', '備考']
+    },
+    dayKindGetter,
+    startDaysOffset: 5,
+    daysToProcess: 30,
+    skipCleanup: true
+  })
+}
 ```
+
+Notion カレンダーで表示すると以下のようになります。
+
+![作成した時間割のデータを Notion カレンダーで日本の祝日と共に表示しているスクリーンショット](/images/notion_calendar.png)
+
+`NextNanika.run()` は時刻表よりに作ってあるので少し設定が面倒ですが、学期毎に一括作成しておくと運用しやすいかなと思います。
+
+### 長期休暇や定期的なイベントなど
+
+時間割を作成するときに、上記のようなことは指定する場合の例です。
+
+- 長期休暇 : カレンダーを作成し `makeDayKindGetter` にカレンダー ID を指定する
+- 定期的なイベント - `opts.dayKindGetter` にロジックをもたせる
+
+```javascript
+const dayKindGetter = NextNanika.makeDayKindGetter([
+  'ja.japanese.official#holiday@group.v.calendar.google.com',
+  '< 長期休暇のカレンダー ID >'
+])
+await NextNanika.run(client, {
+  databaseId,
+  timeRecGenerator: generators,
+  propNames: {
+    name: '科目名',
+    time: '授業時間',
+    tags: ['期間', '備考']
+  },
+  dayKindGetter: (baseTime) => {
+    const kind = dayKindGetter(baseTime)
+    if (kind !== 'SAT' && kind !== 'SUN' && kind !== 'HOL') {
+      // 月の最終日なら 'LAST' を返す
+      const nextMonth = new Date(
+        baseTime.getFullYear(),
+        baseTime.getMonth() + 1,
+        1
+      )
+      const lastDayOfMonth = new Date(nextMonth - 1)
+      if (baseTime.getDate() === lastDayOfMonth.getDate()) {
+        return 'LAST'
+      }
+    }
+    return kind
+  },
+  startDaysOffset: 5,
+  daysToProcess: 30,
+  skipCleanup: true
+})
+```
+
+設定した休暇の期間はスキップされ時間割用のレコードが作成される。
+
+![Notion カレンダーで長期休暇カレンダーと共に表示していいるスクリーンショット](images/holiday.png)]
+
+`opts.dayKindGetter` により追加されたイベントのレコードが作成される。
+
+!['LAST' 用のシートを入力しているスクリーンショット](images/sheet_last.png)
+
+![Notion カレンダーで定期的なイベントを表示しているスクリーンショット](images/last.png)
 
 ## TypeScript
 
