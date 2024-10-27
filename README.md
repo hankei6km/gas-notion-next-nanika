@@ -222,7 +222,7 @@ await NextNanika.run(client, {
     time: '発車時刻',
     tags: ['駅名', '種別']
   },
-  getDatKind: NextNanika.makeDayKindGetter([
+  dayKindGetter: NextNanika.makeDayKindGetter([
     'ja.japanese.official#holiday@group.v.calendar.google.com'
   ])
 })
@@ -411,7 +411,7 @@ await NextNanika.run(client, {
     time: '授業時間',
     tags: ['期間', '備考']
   },
-  getDatKind: NextNanika.makeDayKindGetter([
+  dayKindGetter: NextNanika.makeDayKindGetter([
     'ja.japanese.official#holiday@group.v.calendar.google.com',
     '< カレンダー ID >'
   ]),
@@ -427,7 +427,7 @@ await NextNanika.run(client, {
 
 ### 日の種類判定
 
-以下の型で関数を作成し、`NextNanika.run()` の `opts.getDatKind` に渡すと任意の日付を休日として扱うことができます。
+以下の型で関数を作成し、`NextNanika.run()` の `opts.dayKindGetter` に渡すと任意の日付を休日として扱うことができます。
 
 ```typescript
 type DayKind = 'SUN' | 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'HOL'

@@ -55,7 +55,7 @@ describe('NextNanika.run()', () => {
         time: 'Time',
         tags: ['group', 'tags']
       },
-      getDatKind: (date: Date) => {
+      dayKindGetter: (date: Date) => {
         return 'SUN'
       }
     }
@@ -201,7 +201,7 @@ describe('NextNanika.run()', () => {
         time: 'Time',
         tags: ['group', 'tags']
       },
-      getDatKind: (date: Date) => {
+      dayKindGetter: (date: Date) => {
         return 'SUN'
       }
     }
@@ -276,7 +276,7 @@ describe('NextNanika.run()', () => {
         time: 'Time',
         tags: ['group', 'tags']
       },
-      getDatKind: (date: Date) => {
+      dayKindGetter: (date: Date) => {
         return 'SUN'
       },
       limit: 2 // 5 などではなく 2 を指定している理由。対象の期間(3日)、generatorの数(2) に対して、すべてのループを抜けているか確認するため.
@@ -321,7 +321,7 @@ describe('NextNanika.run()', () => {
         time: 'Time',
         tags: ['group', 'tags']
       },
-      getDatKind: (date: Date) => {
+      dayKindGetter: (date: Date) => {
         return 'SUN'
       },
       startDaysOffset: 1, // Start processing from the second day
@@ -398,7 +398,7 @@ describe('NextNanika.run()', () => {
         time: 'Time',
         tags: ['group', 'tags']
       },
-      getDatKind: (date: Date) => {
+      dayKindGetter: (date: Date) => {
         return 'SUN'
       },
       daysToProcess: 2
@@ -463,7 +463,7 @@ describe('NextNanika.run()', () => {
         time: 'Time',
         tags: ['group', 'tags']
       },
-      getDatKind: (date: Date) => {
+      dayKindGetter: (date: Date) => {
         return 'SUN'
       },
       skipCleanup: true
@@ -551,7 +551,7 @@ describe('NextNanika.run()', () => {
         time: 'Time',
         tags: ['group', 'tags']
       },
-      getDatKind: (date: Date) => {
+      dayKindGetter: (date: Date) => {
         return date.getDay() % 2 === 0 ? 'D1' : 'D2'
       }
     }
