@@ -38,7 +38,7 @@ export namespace NextNanika {
     ): Promise<Awaited<ReturnType<NotionClient['pages']['update']>>>
   }
 
-  export type DayKind =
+  export type DayKind<T extends string = never> =
     | 'SUN'
     | 'MON'
     | 'TUE'
@@ -47,8 +47,11 @@ export namespace NextNanika {
     | 'FRI'
     | 'SAT'
     | 'HOL'
+    | T
 
-  export type GetDayKind = (baseTime: Date) => DayKind
+  export type GetDayKind<T extends string = never> = (
+    baseTime: Date
+  ) => DayKind<T>
 
   export type PropNames = {
     name: string
@@ -58,8 +61,8 @@ export namespace NextNanika {
 
   type CreatePageParameters =
     import('@notionhq/client/build/src/api-endpoints').CreatePageParameters
-  export type TimeRecGeneratorOptions = {
-    dayKind: DayKind
+  export type TimeRecGeneratorOptions<T extends string = never> = {
+    dayKind: DayKind<T>
     baseTime: Date
   }
   type Icon = Extract<CreatePageParameters['icon'], { emoji: any }>['emoji'] // EmojiRequest
@@ -89,19 +92,19 @@ export namespace NextNanika {
     }
     tags?: string[]
   }
-  export type TimeTableEntry = {
-    dayKind: NextNanika.DayKind[]
+  export type TimeTableEntry<T extends string = never> = {
+    dayKind: NextNanika.DayKind<T>[]
     recs: TimeRec[]
   }
-  export type TimeRecGenerator = (
-    opts: TimeRecGeneratorOptions
+  export type TimeRecGenerator<T extends string = never> = (
+    opts: TimeRecGeneratorOptions<T>
   ) => Generator<Entry, void, unknown>
 
-  export type NextNanikaOptions = {
+  export type NextNanikaOptions<T extends string = never> = {
     databaseId: string
-    timeRecGenerator: TimeRecGenerator | TimeRecGenerator[]
+    timeRecGenerator: TimeRecGenerator<T> | TimeRecGenerator<T>[]
     propNames: PropNames
-    getDatKind?: GetDayKind
+    getDatKind?: GetDayKind<T>
     startDaysOffset?: number
     daysToProcess?: number
     limit?: number
@@ -112,7 +115,7 @@ export namespace NextNanika {
     return makeClientT(opts)
   }
   function isLimitReached(
-    opts: NextNanikaOptions,
+    opts: Pick<NextNanikaOptions, 'limit'>,
     createdCount: number
   ): boolean {
     return typeof opts.limit === 'number' && createdCount >= opts.limit
@@ -132,7 +135,10 @@ export namespace NextNanika {
   ) {
     return cleanupT(client, databaseId, new Date(), minutesAgo, propName)
   }
-  export async function run(client: BaseClient, opts: NextNanikaOptions) {
+  export async function run<T extends string = never>(
+    client: BaseClient,
+    opts: NextNanikaOptions<T>
+  ) {
     // 基本とする時刻、tz は実行環境を尊重する
     // (GAS ならライブラリのコードを呼び出しているプロジェクトの設定に従う)
     const baseTime = new Date(
@@ -260,8 +266,11 @@ export namespace NextNanika {
     }
     console.log(`created ${createdCount} pages`)
   }
-  export const makeBasicTimeRecGenerator: (
-    timeTable: TimeTableEntry[],
+
+  export function makeBasicTimeRecGenerator<T extends string = never>(
+    timeTable: TimeTableEntry<T>[],
     group: string[]
-  ) => TimeRecGenerator = makeBasicTimeRecGeneratorT
+  ) {
+    return makeBasicTimeRecGeneratorT<T>(timeTable, group)
+  }
 }

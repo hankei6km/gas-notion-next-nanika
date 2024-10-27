@@ -1,11 +1,11 @@
 import { NextNanika } from './next-nanika.js'
 
-export function makeBasicTimeRecGenerator(
-  timeTable: NextNanika.TimeTableEntry[],
+export function makeBasicTimeRecGenerator<T extends string = never>(
+  timeTable: NextNanika.TimeTableEntry<T>[],
   group: string[] = []
-): NextNanika.TimeRecGenerator {
+): NextNanika.TimeRecGenerator<T> {
   return function* basicTimeRecGenerator(
-    opts: NextNanika.TimeRecGeneratorOptions
+    opts: NextNanika.TimeRecGeneratorOptions<T>
   ) {
     const { dayKind } = opts
 
