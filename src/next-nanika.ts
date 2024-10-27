@@ -104,7 +104,7 @@ export namespace NextNanika {
     databaseId: string
     timeRecGenerator: TimeRecGenerator<T> | TimeRecGenerator<T>[]
     propNames: PropNames
-    getDatKind?: GetDayKind<T>
+    dayKindGetter?: GetDayKind<T>
     startDaysOffset?: number
     daysToProcess?: number
     limit?: number
@@ -173,7 +173,7 @@ export namespace NextNanika {
     const daysToProcess =
       typeof opts.daysToProcess === 'number' ? opts.daysToProcess : 3
     let createdCount = 0
-    const dayKindGetter = opts.getDatKind || makeDayKindGetter()
+    const dayKindGetter = opts.dayKindGetter || makeDayKindGetter()
     for (
       let dayOffset = 0;
       dayOffset < daysToProcess && !isLimitReached(opts, createdCount);
