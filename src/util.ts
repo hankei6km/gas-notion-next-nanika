@@ -188,6 +188,12 @@ export class GatherTimeRecs {
       const recName = rec.props?.[this.propNames.name]
       const recTime = rec.props?.[this.propNames.time]
       const recTags = this.propNames.tags.map((tags) => rec.props?.[tags])
+      const l = recTags.length - tags.length
+      let ttags = tags
+      if (l > 0) {
+        // tags が少ない場合は `[]` を追加
+        ttags = tags.concat(Array(l).fill([]))
+      }
       return (
         recName === name &&
         (recTime as any).start === start &&
@@ -195,8 +201,8 @@ export class GatherTimeRecs {
         recTags.every(
           (recTag, index) =>
             Array.isArray(recTag) &&
-            recTag.length === tags[index].length &&
-            recTag.every((tag, tagIndex) => tag === tags[index][tagIndex])
+            recTag.length === ttags[index].length &&
+            recTag.every((tag, tagIndex) => tag === ttags[index][tagIndex])
         )
       )
     })
