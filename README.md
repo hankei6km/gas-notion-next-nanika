@@ -427,7 +427,15 @@ await NextNanika.run(client, {
 
 ### 時間割に利用する
 
-以下のように、スプレッドシートで終了時間を入力し、`NextNanika.run()` でのプロパティ名指定を変更することで時間割風なレコードを作成できます。
+以下のプロパテパティを持つデータベースを作成します。
+
+- `科目名` : タイトル
+- `授業時間` : 日付
+- `期間` : マルチセレクト
+- `教室` : マルチセレクト
+- `備考` : マルチセレクト
+
+プレッドシートとスクリプトを作成することで、時間割を作成できます。なお、`教室` と `備考` は `,` 区切りで複数の値を入力できます。
 
 ![Google スプレッドシートで曜日別シートに時間割の設定を入力していいるスクリーンショット](images/sheet_class.png)
 
@@ -461,6 +469,63 @@ async function start() {
     skipCleanup: true
   })
 }
+
+function sheetsToTimeTable_(spreadSheet) {
+  const iconCol = 0
+  const nameCol = 1
+  const startHHMMCol = 2
+  const endHHMMCol = 3
+  const tagsCol = 4
+
+  const sheets = spreadSheet
+    .getSheets()
+    .filter((s) => !s.getName().startsWith('!'))
+  const tt = []
+
+  for (const s of sheets) {
+    const t = {
+      dayKind: [...s.getName().split(',')],
+      recs: []
+    }
+
+    const range = s.getDataRange()
+    const values = range.getDisplayValues()
+    for (const row of values.slice(1)) {
+      const rec = {}
+      if (row[iconCol]) {
+        rec.icon = row[iconCol]
+      }
+      if (row[nameCol]) {
+        rec.name = row[nameCol]
+      }
+      const startHHMM = row[startHHMMCol].split(':')
+      rec.start = {
+        hh: startHHMM[0],
+        mm: startHHMM[1]
+      }
+      if (row[endHHMMCol]) {
+        const endHHMM = row[endHHMMCol].split(':')
+        rec.end = {
+          hh: endHHMM[0],
+          mm: endHHMM[1]
+        }
+      }
+      rec.tags = []
+      for (const tt of row.slice(tagsCol)) {
+        let t = []
+        if (typeof tt === 'string' && tt !== '') {
+          t = tt.split(',').filter((c) => typeof c === 'string' && c != '')
+        }
+        rec.tags.push(t)
+      }
+
+      t.recs.push(rec)
+    }
+    //console.log(JSON.stringify(t, null, 2))
+    tt.push(t)
+  }
+  return tt
+}
 ```
 
 Notion カレンダーで表示すると以下のようになります。
@@ -492,7 +557,7 @@ await NextNanika.run(client, {
   dayKindGetter: (baseTime) => {
     const kind = dayKindGetter(baseTime)
     if (kind !== 'SAT' && kind !== 'SUN' && kind !== 'HOL') {
-      // 月の最終日なら 'LAST' を返す
+      // 月の最終日が平日なら 'LAST' を返す
       const nextMonth = new Date(
         baseTime.getFullYear(),
         baseTime.getMonth() + 1,
