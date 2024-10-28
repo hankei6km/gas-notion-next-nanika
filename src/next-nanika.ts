@@ -239,9 +239,15 @@ export namespace NextNanika {
                 }
               }
             }
-            for (let idx = 0; idx < timeRec.tags.length; idx++) {
-              params.properties[opts.propNames.tags[idx]] = {
-                multi_select: timeRec.tags[idx].map((tag) => ({ name: tag }))
+            for (
+              let idx = 0;
+              idx < timeRec.tags.length && opts.propNames.tags.length;
+              idx++
+            ) {
+              if (Array.isArray(timeRec.tags[idx])) {
+                params.properties[opts.propNames.tags[idx]] = {
+                  multi_select: timeRec.tags[idx].map((tag) => ({ name: tag }))
+                }
               }
             }
             if (timeRec.icon) {
