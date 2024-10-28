@@ -522,7 +522,7 @@ describe('NextNanika.run()', () => {
               start: { hh: 9, mm: 0 },
               end: { hh: 10, mm: 0 },
               name: 'Event D1',
-              tags: ['tagD1'],
+              tags: [['tagD1']],
               icon: '📅'
             }
           ]
@@ -534,7 +534,7 @@ describe('NextNanika.run()', () => {
               start: { hh: 11, mm: 0 },
               end: { hh: 12, mm: 0 },
               name: 'Event D2',
-              tags: ['tagD2'],
+              tags: [['tagD2']],
               icon: '📅'
             }
           ]

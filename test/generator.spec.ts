@@ -6,7 +6,7 @@ const mockTimeTable: NextNanika.TimeTableEntry[] = [
     dayKind: [],
     recs: [
       { icon: '#️⃣', start: { hh: 10, mm: 0 } },
-      { name: 'Test Event', start: { hh: 14, mm: 0 }, tags: ['test'] },
+      { name: 'Test Event', start: { hh: 14, mm: 0 }, tags: [['test']] },
       { start: { hh: 18, mm: 0 }, end: { hh: 14, mm: 10 } }
     ]
   },
@@ -14,7 +14,7 @@ const mockTimeTable: NextNanika.TimeTableEntry[] = [
     dayKind: ['SAT', 'SUN'],
     recs: [
       { start: { hh: 9, mm: 30 } },
-      { start: { hh: 14, mm: 0 }, tags: ['test'] },
+      { start: { hh: 14, mm: 0 }, tags: [['test']] },
       { start: { hh: 16, mm: 0 } }
     ]
   }
@@ -30,9 +30,9 @@ describe('makeBasicTimeRecGenerator', () => {
     const entries = Array.from(generator(options))
 
     expect(entries).toEqual([
-      { start: { hh: 9, mm: 30 }, tags: [[], []] },
+      { start: { hh: 9, mm: 30 }, tags: [[]] },
       { start: { hh: 14, mm: 0 }, tags: [[], ['test']] },
-      { start: { hh: 16, mm: 0 }, tags: [[], []] }
+      { start: { hh: 16, mm: 0 }, tags: [[]] }
     ])
   })
 
@@ -45,9 +45,9 @@ describe('makeBasicTimeRecGenerator', () => {
     const entries = Array.from(generator(options))
 
     expect(entries).toEqual([
-      { icon: '#️⃣', start: { hh: 10, mm: 0 }, tags: [[], []] },
+      { icon: '#️⃣', start: { hh: 10, mm: 0 }, tags: [[]] },
       { name: 'Test Event', start: { hh: 14, mm: 0 }, tags: [[], ['test']] },
-      { start: { hh: 18, mm: 0 }, end: { hh: 14, mm: 10 }, tags: [[], []] }
+      { start: { hh: 18, mm: 0 }, end: { hh: 14, mm: 10 }, tags: [[]] }
     ])
   })
 
@@ -60,9 +60,9 @@ describe('makeBasicTimeRecGenerator', () => {
     const entries = Array.from(generator(options))
 
     expect(entries).toEqual([
-      { start: { hh: 9, mm: 30 }, tags: [[], []] },
+      { start: { hh: 9, mm: 30 }, tags: [[]] },
       { start: { hh: 14, mm: 0 }, tags: [[], ['test']] },
-      { start: { hh: 16, mm: 0 }, tags: [[], []] }
+      { start: { hh: 16, mm: 0 }, tags: [[]] }
     ])
   })
 
@@ -78,9 +78,9 @@ describe('makeBasicTimeRecGenerator', () => {
     const entries = Array.from(generator(options))
 
     expect(entries).toEqual([
-      { start: { hh: 9, mm: 30 }, tags: [['group1', 'group2'], []] },
+      { start: { hh: 9, mm: 30 }, tags: [['group1', 'group2']] },
       { start: { hh: 14, mm: 0 }, tags: [['group1', 'group2'], ['test']] },
-      { start: { hh: 16, mm: 0 }, tags: [['group1', 'group2'], []] }
+      { start: { hh: 16, mm: 0 }, tags: [['group1', 'group2']] }
     ])
   })
 
@@ -93,7 +93,7 @@ describe('makeBasicTimeRecGenerator', () => {
     const entries = Array.from(generator(options))
 
     expect(entries).toEqual([
-      { icon: '#️⃣', start: { hh: 10, mm: 0 }, tags: [['group'], []] },
+      { icon: '#️⃣', start: { hh: 10, mm: 0 }, tags: [['group']] },
       {
         name: 'Test Event',
         start: { hh: 14, mm: 0 },
@@ -102,7 +102,7 @@ describe('makeBasicTimeRecGenerator', () => {
       {
         start: { hh: 18, mm: 0 },
         end: { hh: 14, mm: 10 },
-        tags: [['group'], []]
+        tags: [['group']]
       }
     ])
   })
@@ -116,9 +116,9 @@ describe('makeBasicTimeRecGenerator', () => {
     const entries = Array.from(generator(options))
 
     expect(entries).toEqual([
-      { start: { hh: 9, mm: 30 }, tags: [['group'], []] },
+      { start: { hh: 9, mm: 30 }, tags: [['group']] },
       { start: { hh: 14, mm: 0 }, tags: [['group'], ['test']] },
-      { start: { hh: 16, mm: 0 }, tags: [['group'], []] }
+      { start: { hh: 16, mm: 0 }, tags: [['group']] }
     ])
   })
 })

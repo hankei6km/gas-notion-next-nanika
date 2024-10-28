@@ -183,9 +183,9 @@ function sheetsToTimeTable_(spreadSheet) {
           mm: endHHMM[1]
         }
       }
-      rec.tags = row
-        .slice(tagsCol)
-        .filter((c) => typeof c === 'string' && c != '')
+      rec.tags = [
+        row.slice(tagsCol).filter((c) => typeof c === 'string' && c != '')
+      ]
       t.recs.push(rec)
     }
     //console.log(JSON.stringify(t, null, 2))
@@ -373,22 +373,22 @@ const generator1 = NextNanika.makeBasicTimeRecGenerator(
       {
         dayKind: [],
         recs: [
-          { start: { hh: 7, mm: 20 }, tags: ['急行', '東京'] },
-          { start: { hh: 8, mm: 20 }, tags: ['快速'] }
+          { start: { hh: 7, mm: 20 }, tags: [['急行', '東京']] },
+          { start: { hh: 8, mm: 20 }, tags: [['快速']] }
         ]
       },
       {
         dayKind: ['SAT'],
         recs: [
-          { start: { hh: 7, mm: 20 }, tags: ['急行', '東京'] },
-          { start: { hh: 8, mm: 20 }, tags: ['快速'] }
+          { start: { hh: 7, mm: 20 }, tags: [['急行', '東京']] },
+          { start: { hh: 8, mm: 20 }, tags: [['快速']] }
         ]
       },
       {
         dayKind: ['SUN', 'HOL'],
         recs: [
-          { start: { hh: 7, mm: 20 }, tags: ['急行', '東京'] },
-          { start: { hh: 8, mm: 20 }, tags: ['快速'] }
+          { start: { hh: 7, mm: 20 }, tags: [['急行', '東京']] },
+          { start: { hh: 8, mm: 20 }, tags: [['快速']] }
         ]
       }
     ]
