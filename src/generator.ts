@@ -22,7 +22,10 @@ export function makeBasicTimeRecGenerator<T extends string = never>(
           hh: rec.start.hh,
           mm: rec.start.mm
         },
-        tags: [group, rec.tags || []]
+        tags: [group]
+      }
+      if (Array.isArray(rec.tags)) {
+        e.tags.push(...rec.tags)
       }
       if (rec.end) {
         e.end = {

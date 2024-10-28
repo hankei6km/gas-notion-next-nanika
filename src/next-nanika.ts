@@ -90,7 +90,7 @@ export namespace NextNanika {
       hh: number
       mm: number
     }
-    tags?: string[]
+    tags?: string[][]
   }
   export type TimeTableEntry<T extends string = never> = {
     dayKind: NextNanika.DayKind<T>[]
