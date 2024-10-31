@@ -5,6 +5,8 @@ import {
   tzString,
   formatHHMMOver24Hours,
   chkRecsAlreadyExist,
+  isTimeStampIncluded,
+  titleParams,
   cleanup,
   GatherTimeRecs
 } from '../src/util'
@@ -218,6 +220,164 @@ describe('formatHHMMOver24Hours', () => {
           }
         }
       })
+    })
+  })
+
+  describe('isTimeStampIncluded', () => {
+    it('should return true if @time is included', () => {
+      expect(isTimeStampIncluded('This is a test @time')).toBe(true)
+    })
+
+    it('should return true if @startTime is included', () => {
+      expect(isTimeStampIncluded('This is a test @startTime')).toBe(true)
+    })
+
+    it('should return true if @date is included', () => {
+      expect(isTimeStampIncluded('This is a test @date')).toBe(true)
+    })
+
+    it('should return true if @startDate is included', () => {
+      expect(isTimeStampIncluded('This is a test @startDate')).toBe(true)
+    })
+
+    it('should return false if no timestamp is included', () => {
+      expect(isTimeStampIncluded('This is a test')).toBe(false)
+    })
+
+    it('should return false if text is empty', () => {
+      expect(isTimeStampIncluded('')).toBe(false)
+    })
+
+    it('should return true if multiple timestamps are included', () => {
+      expect(isTimeStampIncluded('This is a test @time and @date')).toBe(true)
+    })
+
+    it('should return true if timestamp is at the start of the text', () => {
+      expect(isTimeStampIncluded('@time This is a test')).toBe(true)
+    })
+
+    it('should return true if timestamp is at the end of the text', () => {
+      expect(isTimeStampIncluded('This is a test @time')).toBe(true)
+    })
+  })
+
+  describe('titleParams', () => {
+    it('should handle @time correctly', () => {
+      const result = titleParams(
+        'Event @time',
+        '2023-10-01T10:00:00Z',
+        '2023-10-01T11:00:00Z'
+      )
+      expect(result).toEqual([
+        { text: { content: 'Event ' } },
+        {
+          mention: {
+            date: {
+              start: '2023-10-01T10:00:00Z',
+              end: '2023-10-01T11:00:00Z'
+            }
+          }
+        }
+      ])
+    })
+
+    it('should handle @startTime correctly', () => {
+      const result = titleParams(
+        'Event @startTime',
+        '2023-10-01T10:00:00Z',
+        null
+      )
+      expect(result).toEqual([
+        { text: { content: 'Event ' } },
+        {
+          mention: {
+            date: {
+              start: '2023-10-01T10:00:00Z'
+            }
+          }
+        }
+      ])
+    })
+
+    it('should handle @date correctly', () => {
+      const result = titleParams(
+        'Event @date',
+        '2023-10-01T10:00:00Z',
+        '2023-10-01T11:00:00Z'
+      )
+      expect(result).toEqual([
+        { text: { content: 'Event ' } },
+        {
+          mention: {
+            date: {
+              start: '2023-10-01',
+              end: '2023-10-01'
+            }
+          }
+        }
+      ])
+    })
+
+    it('should handle @startDate correctly', () => {
+      const result = titleParams(
+        'Event @startDate',
+        '2023-10-01T10:00:00Z',
+        null
+      )
+      expect(result).toEqual([
+        { text: { content: 'Event ' } },
+        {
+          mention: {
+            date: {
+              start: '2023-10-01'
+            }
+          }
+        }
+      ])
+    })
+
+    it('should handle multiple timestamps correctly', () => {
+      const result = titleParams(
+        'Event @time and @date',
+        '2023-10-01T10:00:00Z',
+        '2023-10-01T11:00:00Z'
+      )
+      expect(result).toEqual([
+        { text: { content: 'Event ' } },
+        {
+          mention: {
+            date: {
+              start: '2023-10-01T10:00:00Z',
+              end: '2023-10-01T11:00:00Z'
+            }
+          }
+        },
+        { text: { content: ' and ' } },
+        {
+          mention: {
+            date: {
+              start: '2023-10-01',
+              end: '2023-10-01'
+            }
+          }
+        }
+      ])
+    })
+
+    it('should handle text without timestamps correctly', () => {
+      const result = titleParams(
+        'Event without timestamps',
+        '2023-10-01T10:00:00Z',
+        null
+      )
+      expect(result).toEqual([
+        { text: { content: 'Event without timestamps' } }
+      ])
+    })
+
+    it('should handle empty text correctly', () => {
+      const result = titleParams('', '2023-10-01T10:00:00Z', null)
+      expect(result).toEqual([])
     })
   })
 
@@ -505,7 +665,27 @@ describe('formatHHMMOver24Hours', () => {
         expect(result).toBe(true)
       })
 
-      it('should return false if the record does not exist', () => {
+      it('should return true if the record exists with a timestamp in the name', () => {
+        const result = gatherTimeRecs.isExist(
+          'Name1 @time',
+          '2023-10-01T10:00:00Z',
+          '2023-10-01T11:00:00Z',
+          [['tag1'], ['tag2-1', 'tag2-2']]
+        )
+        expect(result).toBe(true)
+      })
+
+      it('should return true if the record exists(name)', () => {
+        const result = gatherTimeRecs.isExist(
+          'Name3',
+          '2023-10-01T10:00:00Z',
+          '2023-10-01T11:00:00Z',
+          [['tag1'], ['tag2-1', 'tag2-2']]
+        )
+        expect(result).toBe(false)
+      })
+
+      it('should return false if the record does not exist(tags)', () => {
         const result = gatherTimeRecs.isExist(
           'Name1',
           '2023-10-01T14:00:00Z',
