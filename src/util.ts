@@ -1,3 +1,4 @@
+import type { CreatePageParameters } from '@notionhq/client/build/src/api-endpoints'
 import { ContentRaw, toContent } from 'notion2content'
 import { NextNanika } from './next-nanika.js'
 
@@ -88,6 +89,65 @@ export async function chkRecsAlreadyExist(
     }
   })
   return response.results.length > 0
+}
+
+const timeStampRegExtp = new RegExp('(@time|@startTime|@date|@startDate)')
+
+export function isTimeStampIncluded(text: string): boolean {
+  return timeStampRegExtp.test(text)
+}
+
+export function titleParams(
+  text: string,
+  startTime: string,
+  endTime: string | null
+): Extract<
+  CreatePageParameters['properties'][keyof CreatePageParameters['properties']],
+  { type?: 'title'; title: any }
+>['title'] {
+  const texts = text.split(timeStampRegExtp).filter(Boolean)
+  return texts.map((t: string) => {
+    if (t === '@time') {
+      return {
+        mention: {
+          date: {
+            start: startTime,
+            end: endTime ? endTime : null
+          }
+        }
+      }
+    } else if (t === '@startTime') {
+      return {
+        mention: {
+          date: {
+            start: startTime
+          }
+        }
+      }
+    } else if (t === '@date') {
+      return {
+        mention: {
+          date: {
+            start: startTime.split('T')[0],
+            end: endTime ? endTime.split('T')[0] || null : null
+          }
+        }
+      }
+    } else if (t === '@startDate') {
+      return {
+        mention: {
+          date: {
+            start: startTime.split('T')[0]
+          }
+        }
+      }
+    }
+    return {
+      text: {
+        content: t
+      }
+    }
+  })
 }
 
 export async function cleanup(
@@ -195,7 +255,7 @@ export class GatherTimeRecs {
         ttags = tags.concat(Array(l).fill([]))
       }
       return (
-        recName === name &&
+        (isTimeStampIncluded(name) || recName === name) &&
         (recTime as any).start === start &&
         (recTime as any).end === end &&
         recTags.every(

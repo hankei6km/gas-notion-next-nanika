@@ -6,6 +6,7 @@ import {
   GatherTimeRecs,
   makeDayKindGetter as makeDayKindGetterT,
   padNN,
+  titleParams,
   tzString
 } from './util.js'
 
@@ -223,13 +224,7 @@ export namespace NextNanika {
               },
               properties: {
                 [opts.propNames.name]: {
-                  title: [
-                    {
-                      text: {
-                        content: name
-                      }
-                    }
-                  ]
+                  title: titleParams(name, startTime, endTime)
                 },
                 [opts.propNames.time]: {
                   date: {
