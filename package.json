@@ -39,7 +39,7 @@
   "devDependencies": {
     "@hankei6km/files-to-licenses": "^0.1.1",
     "@types/google-apps-script": "^1.0.84",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^30.0.0",
     "esbuild": "^0.25.0",
     "jest": "^30.0.0",
     "rimraf": "^6.0.0",
